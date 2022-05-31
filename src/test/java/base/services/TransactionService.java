@@ -14,12 +14,12 @@ import java.util.Map;
 /**
  * This Class contains all methods/actions needed by functions related to Subscription Service
  */
-public class SubscriptionService {
+public class TransactionService {
 
     /**
      * Logger by Log4j2 declaration and initialization
      */
-    private static final Logger LOGGER = LogManager.getLogger(SubscriptionService.class);
+    private static final Logger LOGGER = LogManager.getLogger(TransactionService.class);
 
     /**
      * Constants definitions
@@ -120,12 +120,12 @@ public class SubscriptionService {
      * @return Response object to assert/compare response code
      */
     @Step("I send a DELETE query by id {int}")
-    public Response sendDeleteQueryById(int id) {
+    public Response sendDeleteQueryById(String id) {
         response = SerenityRest.given()
                 .contentType(CONTENT_TYPE)
                 .header(CONTENT_TYPE, SUBSCRIPTION_CONTENT_TYPE)
                 .when()
-                .delete(new BaseApi().getEndpointByKey("my_endpoint") + "/" + id);
+                .delete(new BaseApi().getEndpointByKey("bank_endpoint")+"/"+ id);
 
         LOGGER.info("Send DELETE Query --- Time: " + response.getTime() + " -- Status code: " + response.getStatusCode() +
                 " -- Session ID: " + response.getSessionId());
@@ -141,12 +141,12 @@ public class SubscriptionService {
                 .contentType(CONTENT_TYPE)
                 .header(CONTENT_TYPE, SUBSCRIPTION_CONTENT_TYPE)
                 .body(bodyRequest)
-                .delete(new BaseApi().getEndpointByKey("my_endpoint"));
+                .delete(new BaseApi().getEndpointByKey("bank_endpoint"));
 
         LOGGER.info("Send DELETE Query --- Time: " + response.getTime() + " -- Status code: " + response.getStatusCode() +
                 " -- Session ID: " + response.getSessionId());
     }
-
+        //@eli
     /**
      * This method returns the list of users from the main service with all contained elements
      *
@@ -154,8 +154,14 @@ public class SubscriptionService {
      */
     @Step("I get the list of users from service")
     public List<ClientTransaction> getUserListFromService() {
-
+        sendRequestByGet(new BaseApi().getEndpointByKey("bank_endpoint"));
         return SerenityRest.lastResponse().jsonPath().getList(".", ClientTransaction.class);
+    }
+
+    @Step("checking data")
+    public ClientTransaction iGetTheListOfUsersFromService() {
+        List<ClientTransaction> userListResponse = getUserListFromService();
+        return userListResponse.get(userListResponse.size());
     }
 
     /**
@@ -182,38 +188,23 @@ public class SubscriptionService {
                 .contentType(CONTENT_TYPE)
                 .header(CONTENT_TYPE, SUBSCRIPTION_CONTENT_TYPE)
                 .body(body)
-                .put(new BaseApi().getEndpointByKey("my_endpoint") + "/" + id);
+                .put(new BaseApi().getEndpointByKey("bank_endpoint") + "/" + id);
 
         LOGGER.info("Send UPDATE Query --- Time: " + response.getTime() + " -- Status code: " + response.getStatusCode() +
                 " -- Session ID: " + response.getSessionId());
 
         return response;
     }
-    @Step("I get List of client transactions")
-    public List<ClientTransaction> getListOfClientTransaction(){
-        sendRequestByGet("bank_endpoint");
 
-       return SerenityRest.lastResponse().jsonPath().getList(".",ClientTransaction.class);
-    }
-
-    //Delete all client transactions from service
     @Step("I delete the list of Transactions")
     public  void deleteAllClientTransactionsFromService(){
         List<ClientTransaction> value = getUserListFromService();
 
         if(value.size()>0){
-            LOGGER.info("size of :"+value.size());
-            response = sendDeleteQueryById(1);
-        }else  {
-            LOGGER.info("NO size of :"+value.size());
+            for(ClientTransaction transaction : value){
+                response = sendDeleteQueryById(transaction.getId());
+            }
         }
-
-//        public void deleteQueryById(){
-//
-//        }
-
-        //return SerenityRest.lastResponse().jsonPath().getList(".",ClientTransaction.class);
-        //return response;
     }
 
 }

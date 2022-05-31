@@ -2,7 +2,7 @@ package steps;
 
 import base.BaseApi;
 import base.model.ClientTransaction;
-import base.services.SubscriptionService;
+import base.services.TransactionService;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -15,10 +15,10 @@ import java.util.Map;
 import static net.serenitybdd.rest.SerenityRest.restAssuredThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SubscriptionSteps {
+public class TransactionSteps {
 
     @Steps
-    SubscriptionService subscriptionService;
+    TransactionService subscriptionService;
 
     @Given("I get the response from the endpoint {string}")
     public void iGetTheResponseFromTheEndpoint(String endpoint) {
@@ -27,7 +27,7 @@ public class SubscriptionSteps {
 
     @Given("I get the response from the endpoint")
     public void iGetTheResponseFromTheEndpoint() {
-        subscriptionService.sendGetRequest("https://628c1544a3fd714fd02c7a3e.mockapi.io/api/v1/client");
+        subscriptionService.sendGetRequest("https://6296746775c34f1f3b304140.mockapi.io/api/v1/client");
     }
 
 
@@ -48,8 +48,8 @@ public class SubscriptionSteps {
 
         for (Map<String, String> columns : rows) {
             assertThat(user_list.stream().anyMatch(userFound -> userFound.getName().equals(columns.get("name"))));
-            assertThat(user_list.stream().anyMatch(userFound -> userFound.getEmail().equals(columns.get("lastName"))));
-            assertThat(user_list.stream().anyMatch(userFound -> String.valueOf(userFound.isActive()).equals(columns.get("amount"))));
+            assertThat(user_list.stream().anyMatch(userFound -> userFound.getLastName().equals(columns.get("lastName"))));
+            assertThat(user_list.stream().anyMatch(userFound -> String.valueOf(userFound.isActive()).equals(columns.get("active"))));
         }
     }
 
@@ -65,7 +65,7 @@ public class SubscriptionSteps {
 
         for (Map<String, String> columns : rows) {
             clientTransacBody.setName(columns.get("name"));
-            clientTransacBody.setEmail(columns.get("email"));
+            clientTransacBody.setLastName(columns.get("lastname"));
             clientTransacBody.setActive(Boolean.parseBoolean(columns.get("active")));
 
             subscriptionService.sendPostQueryWithBody(clientTransacBody);
@@ -86,8 +86,8 @@ public class SubscriptionSteps {
     public void iDeleteUserByIdDataTable(DataTable dataTable) {
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         for (Map<String, String> columns : rows) {
-            assertThat(subscriptionService.sendDeleteQueryById(Integer.parseInt(columns.get("id"))).equals("200"));
-        }
+            assertThat(subscriptionService.sendDeleteQueryById((columns.get("id"))).equals("200"));
+        }//Integer.parseInt
     }
 
     @Then("I DELETE the last user created")
@@ -102,22 +102,24 @@ public class SubscriptionSteps {
 
         for (Map<String, String> columns : rows) {
             userBody.setName(columns.get("name"));
-            userBody.setEmail(columns.get("email"));
-            userBody.setActive(Boolean.parseBoolean(columns.get("subscription")));
-            userBody.setId(Integer.parseInt(columns.get("id")));
+            userBody.setLastName(columns.get("lastname"));
+            userBody.setActive(Boolean.parseBoolean(columns.get("active")));
+            userBody.setId((columns.get("id")));
 
             assertThat(subscriptionService.updateUserById(userBody, Integer.parseInt(columns.get("id"))).equals("200"));
         }
     }
 
-    //here
-    @When("I clean all transactions from the endpoint")
+    //When
+    @Given("I clean all transactions from the endpoint")
     public void iCleanAllTransactionsFromTheEndpoint(){
-        //subscriptionService.sendGetRequest("200");
         subscriptionService.deleteAllClientTransactionsFromService();
     }
 
-
+    @Then("I get the list of transactions")
+    public void iGetTheListOfUsersFromService(){
+        assertThat(subscriptionService.iGetTheListOfUsersFromService().equals(13)).isTrue();
+    }
 
     //
     @Then("I check the list is empty")

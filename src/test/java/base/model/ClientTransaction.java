@@ -11,24 +11,29 @@ public class ClientTransaction {
 
     private String name;
     private String lastName;
-    private int accountNumber;
-    private double amount;
-    private boolean transactionType;
-    private String email;
     private boolean active;
+    private String id;
+
+
+    private String accountNumber;
+    private float amount;
+    private String transactionType;
+    private String email;
+
     private String country;
-    private int telephone;
-    private int id;
+    private String telephone;
+
 
     public ClientTransaction(){
 
     }
 
-    public int getId() {
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -48,28 +53,13 @@ public class ClientTransaction {
         this.lastName = lastName;
     }
 
-    public int getAccountNumber() {
-        return accountNumber;
+
+    public boolean isActive() {
+        return active;
     }
 
-    public void setAccountNumber(int accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public boolean isTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(boolean transactionType) {
-        this.transactionType = transactionType;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getEmail() {
@@ -80,12 +70,28 @@ public class ClientTransaction {
         this.email = email;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 
     public String getCountry() {
@@ -96,11 +102,11 @@ public class ClientTransaction {
         this.country = country;
     }
 
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(int telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 }
