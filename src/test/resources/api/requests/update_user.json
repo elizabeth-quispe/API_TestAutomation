@@ -1,0 +1,12 @@
+{
+  "name": "name 1",
+  "lastName": "lastName 1",
+  "accountNumber": "60290540",
+  "amount": "106.81",
+  "transactionType": "invoice",
+  "email": "Melyna.Reinger42@gmail.com",
+  "active": false,
+  "country": "Syrian Arab Republic",
+  "telephone": "443-525-0877 x78667",
+  "id": "1"
+}
