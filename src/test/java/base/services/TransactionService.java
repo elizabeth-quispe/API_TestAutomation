@@ -5,7 +5,6 @@ import base.model.ClientTransaction;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
-import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -147,7 +146,19 @@ public class TransactionService {
         LOGGER.info("Send DELETE Query --- Time: " + response.getTime() + " -- Status code: " + response.getStatusCode() +
                 " -- Session ID: " + response.getSessionId());
     }
-        //@eli
+
+    /**
+     * Data transaction client transaction.
+     *
+     * @param id the id
+     * @return the client transaction
+     */
+    @Step("I get transaction by id {int}")
+    public ClientTransaction dataTransaction(int id ){
+        sendRequestByGet(new BaseApi().getEndpointByKey("bank_endpoint")+"/"+id);
+        return SerenityRest.lastResponse().jsonPath().getObject(".", ClientTransaction.class);
+    }
+
     /**
      * This method returns the list of users from the main service with all contained elements
      *

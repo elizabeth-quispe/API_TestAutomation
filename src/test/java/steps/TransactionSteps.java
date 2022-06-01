@@ -8,9 +8,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
-import org.assertj.core.api.SoftAssertions;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -93,20 +91,24 @@ public class TransactionSteps {
         assertThat(subscriptionService.sendDeleteQueryById(subscriptionService.getLastCreatedUser().getId()).equals("200"));
     }
 
-    @Then("I UPDATE client by id with valid account number")
-    public void iUpdateTheClientByIdWithValidAccountNumber(DataTable dataTable) {
+    @Then("I UPDATE client by id with valid account number {string} and id {int}")
+    public void iUpdateTheClientByIdWithValidAccountNumber( String accountNumber, int id) {
+       ClientTransaction data =  subscriptionService.dataTransaction(id);
         ClientTransaction userBody = new ClientTransaction();
-        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-        List<ClientTransaction> clientTransactionList= subscriptionService.getUserListFromService();
-        for (Map<String, String> columns : rows) {
-            userBody.setId((columns.get("id")));
-            userBody.setAccountNumber(columns.get("accountNumber"));
-            userBody.setName(columns.get("name"));
-            userBody.setLastName(clientTransactionList.get(1).getLastName());//setLastName(subscriptionService.iGetTheListOfUsersFromService().getLastName());
-            userBody.getEmail();
 
-            assertThat(subscriptionService.updateUserById(userBody, Integer.parseInt(columns.get("id"))).equals("200"));
-        }
+
+            userBody.setName(data.getName());
+            userBody.setLastName(data.getLastName());
+            userBody.setActive(data.isActive());
+            userBody.setEmail(data.getEmail());
+            userBody.setAccountNumber(accountNumber);
+            userBody.setAmount(data.getAmount());
+            userBody.setTransactionType(data.getTransactionType());
+            userBody.setCountry(data.getCountry());
+            userBody.setTelephone(data.getTelephone());
+
+            assertThat(subscriptionService.updateUserById(userBody, Integer.parseInt(data.getId())).equals("200"));
+
     }
 
     @Given("I clean all transactions from the endpoint")
@@ -119,7 +121,6 @@ public class TransactionSteps {
         assertThat(subscriptionService.iGetTheListOfUsersFromService().equals(13)).isTrue();
     }
 
-    //
     @Then("I check the list is empty")
     public void iCheckTheEndpointIsEmpty() {
         assertThat(subscriptionService.getUserListFromService().isEmpty()).isTrue();
@@ -151,7 +152,7 @@ public class TransactionSteps {
         }
     }
 
-    @When("I Verify email")
+    @When("I verify email")
     public void iVerifyEmail(){
 
         int y = subscriptionService.getSizeList() + 1;
@@ -161,4 +162,6 @@ public class TransactionSteps {
         }
 
     }
+
+
 }
