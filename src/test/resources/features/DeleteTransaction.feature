@@ -3,7 +3,6 @@
 ## Delete information from API
   Feature: POC Example - Delete actions
 
-
   # DELETE Request based on a key and using JSON resource
   @deleteScenario
   Scenario: Delete all client transactions from service

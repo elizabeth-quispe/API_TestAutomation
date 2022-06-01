@@ -8,7 +8,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
+import org.assertj.core.api.SoftAssertions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +27,6 @@ public class TransactionSteps {
         subscriptionService.sendGetRequest(endpoint);
     }
 
-    @Given("I get the response from the endpoint")
-    public void iGetTheResponseFromTheEndpoint() {
-        subscriptionService.sendGetRequest("https://6296746775c34f1f3b304140.mockapi.io/api/v1/client");
-    }
-
 
     @Given("I get the response from the endpoint file with key {string}")
     public void iGetTheResponseFromTheEndpointWithKey(String key) {
@@ -41,14 +38,15 @@ public class TransactionSteps {
         subscriptionService.sendRequestByGet(new BaseApi().getEndpointByKey(key));
     }
 
+
     @When("I compare following data against client")
-    public void iCompareDataWithSubscribedUsers(DataTable dataTable) {
-        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+    public void iCompareDataWithSubscribedUsers(List<Map<String, String>>rows) {
+
         List<ClientTransaction> user_list = subscriptionService.getUserListFromService();
 
         for (Map<String, String> columns : rows) {
             assertThat(user_list.stream().anyMatch(userFound -> userFound.getName().equals(columns.get("name"))));
-            assertThat(user_list.stream().anyMatch(userFound -> userFound.getLastName().equals(columns.get("lastName"))));
+            assertThat(user_list.stream().anyMatch(userFound -> userFound.getEmail().equals(columns.get("email"))));
             assertThat(user_list.stream().anyMatch(userFound -> String.valueOf(userFound.isActive()).equals(columns.get("active"))));
         }
     }
@@ -87,7 +85,7 @@ public class TransactionSteps {
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         for (Map<String, String> columns : rows) {
             assertThat(subscriptionService.sendDeleteQueryById((columns.get("id"))).equals("200"));
-        }//Integer.parseInt
+        }
     }
 
     @Then("I DELETE the last user created")
@@ -95,22 +93,22 @@ public class TransactionSteps {
         assertThat(subscriptionService.sendDeleteQueryById(subscriptionService.getLastCreatedUser().getId()).equals("200"));
     }
 
-    @Then("I UPDATE the user by id with information")
-    public void iUpdateTheUserByIdWithInformation(DataTable dataTable) {
+    @Then("I UPDATE client by id with valid account number")
+    public void iUpdateTheClientByIdWithValidAccountNumber(DataTable dataTable) {
         ClientTransaction userBody = new ClientTransaction();
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-
+        List<ClientTransaction> clientTransactionList= subscriptionService.getUserListFromService();
         for (Map<String, String> columns : rows) {
-            userBody.setName(columns.get("name"));
-            userBody.setLastName(columns.get("lastname"));
-            userBody.setActive(Boolean.parseBoolean(columns.get("active")));
             userBody.setId((columns.get("id")));
+            userBody.setAccountNumber(columns.get("accountNumber"));
+            userBody.setName(columns.get("name"));
+            userBody.setLastName(clientTransactionList.get(1).getLastName());//setLastName(subscriptionService.iGetTheListOfUsersFromService().getLastName());
+            userBody.getEmail();
 
             assertThat(subscriptionService.updateUserById(userBody, Integer.parseInt(columns.get("id"))).equals("200"));
         }
     }
 
-    //When
     @Given("I clean all transactions from the endpoint")
     public void iCleanAllTransactionsFromTheEndpoint(){
         subscriptionService.deleteAllClientTransactionsFromService();
@@ -126,13 +124,41 @@ public class TransactionSteps {
     public void iCheckTheEndpointIsEmpty() {
         assertThat(subscriptionService.getUserListFromService().isEmpty()).isTrue();
     }
-    /*
-    @Given("I check the list of Transactions are available")
-    public void iVerifyDataListAreAvailable(){
-        //List<Map<String,String>> list = dataTable.asMaps(String.class, String.class);
-        //List<ClientTransaction> clientTransactions = subscriptionService.getUserListFromService();
 
-        subscriptionService.getClientListFromService(subscriptionService.getUserListFromService());
-        assertThat(subscriptionService.getUserListFromService().isEmpty()).isTrue();
-    }*/
+    @When("I create new transactions {int}")
+    public  void iCreateNewTransactions(int number) {
+
+        for (int i = 1; i < number + 1; i++) {
+            int x = subscriptionService.getSizeList() + 1;
+            ClientTransaction userBody = new ClientTransaction();
+            userBody.setName("name " + x);
+            userBody.setLastName("lastName " + x);
+            userBody.setActive(true);
+            userBody.setAccountNumber("6484-6880-9148-353");
+            userBody.setAmount((123 * i) + x);
+            userBody.setTransactionType("withdrawal " + x);
+            userBody.setEmail("user" + x + "@gmail.com");
+            userBody.setCountry("Perú");
+            userBody.setTelephone("582.340.2765 x298");
+
+            if(subscriptionService.getSizeList()!=0){
+                assertThat(subscriptionService.iGetTheListOfUsersFromService().getEmail()).
+                        isNotEqualTo("user" + x + "@gmail.com");
+            }
+
+            subscriptionService.sendPostQueryWithBody(userBody);
+
+        }
+    }
+
+    @When("I Verify email")
+    public void iVerifyEmail(){
+
+        int y = subscriptionService.getSizeList() + 1;
+        for (int x=1;x<y;x++){
+            assertThat(subscriptionService.iGetTheListOfUsersFromService().getEmail()).
+                    isNotEqualTo("user" + x + "@gmail.com");
+        }
+
+    }
 }

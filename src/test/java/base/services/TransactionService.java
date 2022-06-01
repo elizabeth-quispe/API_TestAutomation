@@ -5,6 +5,7 @@ import base.model.ClientTransaction;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
+import org.apache.hc.core5.http.nio.AsyncClientEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -107,7 +108,7 @@ public class TransactionService {
                 .contentType(CONTENT_TYPE)
                 .header(CONTENT_TYPE, SUBSCRIPTION_CONTENT_TYPE)
                 .body(body)
-                .post(new BaseApi().getEndpointByKey("my_endpoint"));
+                .post(new BaseApi().getEndpointByKey("bank_endpoint"));
 
         LOGGER.info("Send POST Query --- Time: " + response.getTime() + " -- Status code: " + response.getStatusCode() +
                 " -- Session ID: " + response.getSessionId());
@@ -161,7 +162,7 @@ public class TransactionService {
     @Step("checking data")
     public ClientTransaction iGetTheListOfUsersFromService() {
         List<ClientTransaction> userListResponse = getUserListFromService();
-        return userListResponse.get(userListResponse.size());
+        return userListResponse.get(userListResponse.size()-1);
     }
 
     /**
@@ -188,6 +189,7 @@ public class TransactionService {
                 .contentType(CONTENT_TYPE)
                 .header(CONTENT_TYPE, SUBSCRIPTION_CONTENT_TYPE)
                 .body(body)
+                .when()
                 .put(new BaseApi().getEndpointByKey("bank_endpoint") + "/" + id);
 
         LOGGER.info("Send UPDATE Query --- Time: " + response.getTime() + " -- Status code: " + response.getStatusCode() +
@@ -205,6 +207,11 @@ public class TransactionService {
                 response = sendDeleteQueryById(transaction.getId());
             }
         }
+    }
+
+    public int getSizeList(){
+        List<ClientTransaction> clientTransactionList= getUserListFromService();
+        return clientTransactionList.size();
     }
 
 }

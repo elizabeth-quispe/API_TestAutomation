@@ -4,7 +4,7 @@
 Feature: POC Example - Get actions
 
   Scenario: Testing an Endpoint - Get action using string parameter by resource
-    Given I get the endpoint by resource "my_endpoint"
+    Given I get the endpoint by resource "bank_endpoint"
     Then I get the response code equals to 200
 
   # Get request scenario using a implicit endpoint
@@ -14,17 +14,11 @@ Feature: POC Example - Get actions
     When I get the response code equals to 200
     Then I get the list of transactions
 
-  # Get request scenario using endpoint by parameter
-  Scenario: Testing an Endpoint - Get action using string parameter
-    Given I get the response from the endpoint "https://628c1544a3fd714fd02c7a3e.mockapi.io/api/v1/client"
-    Then I get the response code equals to 200
-
-  # Get request scenario using endpoint by parameter
-  Scenario: Testing an Endpoint - Get action using string parameter by resource
-    Given I get the endpoint by resource "bank_endpoint"
-    Then I get the response code equals to 200
-
-
+  @emailScenario
+  Scenario: Testing an email duplicated - Get action using string parameter by resource
+  #Given I Verify email
+  When I Verify email
+  Then I get the response code equals to 200
 
 
   # Check if List is empty
