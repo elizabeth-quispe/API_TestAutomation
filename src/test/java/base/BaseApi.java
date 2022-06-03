@@ -1,5 +1,7 @@
 package base;
 
+import base.model.ClientTransaction;
+import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -7,6 +9,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This Class contains all methods that get all data or information from API for testing
@@ -69,4 +72,5 @@ public class BaseApi {
         }
         return null;
     }
+
 }

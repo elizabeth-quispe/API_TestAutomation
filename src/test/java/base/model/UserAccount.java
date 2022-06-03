@@ -14,4 +14,8 @@ public class UserAccount {
         this.clientTransactions = clientTransactions;
     }
 
+    public  int sizeOfList(){
+       return clientTransactions.size();
+    }
+
 }

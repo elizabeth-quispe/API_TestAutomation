@@ -7,6 +7,8 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import net.serenitybdd.rest.SerenityRest;
+import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
 
 import java.util.List;
@@ -161,6 +163,22 @@ public class TransactionSteps {
                     isNotEqualTo("user" + x + "@gmail.com");
         }
 
+    }
+
+    /**
+     * This method send a GET request bases on an endpoint
+     * Using get function from SerenityREST
+     *
+     *
+     */
+    @When("I want update data with response code equals to {int}")
+    public void iWantUpdateData(int response) {
+        if(subscriptionService.getSizeList()>0){
+            iGetTheResponseCodeEqualsTo(response);
+        }else{
+            iSendTheResponseFromTheEndpointFileWithKey("userCreation");
+            iGetTheResponseCodeEqualsTo(201);
+        }
     }
 
 
